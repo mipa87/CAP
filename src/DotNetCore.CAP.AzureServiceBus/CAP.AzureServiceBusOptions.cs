@@ -28,6 +28,12 @@ public class AzureServiceBusOptions
     public string ConnectionString { get; set; } = default!;
 
     /// <summary>
+    /// The set of options that can be specified when creating an <see cref="ServiceBusConnection" />
+    ///  to configure its behavior.
+    /// </summary>
+    public ServiceBusClientOptions ClientOptions { get; set; } = new ServiceBusClientOptions();
+
+    /// <summary>
     /// Namespace of service bus , Needs to be set when using with TokenCredential Property
     /// </summary>
     public string Namespace { get; set; } = default!;

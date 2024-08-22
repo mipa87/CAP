@@ -196,12 +196,12 @@ internal sealed class AzureServiceBusConsumerClient : IConsumerClient
                 {
                     _administrationClient =
                         new ServiceBusAdministrationClient(_asbOptions.Namespace, _asbOptions.TokenCredential);
-                    _serviceBusClient = new ServiceBusClient(_asbOptions.Namespace, _asbOptions.TokenCredential);
+                    _serviceBusClient = new ServiceBusClient(_asbOptions.Namespace, _asbOptions.TokenCredential, _asbOptions.ClientOptions);
                 }
                 else
                 {
                     _administrationClient = new ServiceBusAdministrationClient(_asbOptions.ConnectionString);
-                    _serviceBusClient = new ServiceBusClient(_asbOptions.ConnectionString);
+                    _serviceBusClient = new ServiceBusClient(_asbOptions.ConnectionString, _asbOptions.ClientOptions);
                 }
 
                 var topicConfigs =
@@ -211,7 +211,7 @@ internal sealed class AzureServiceBusConsumerClient : IConsumerClient
                         .GroupBy(n => n.topicPaths, StringComparer.OrdinalIgnoreCase)
                         .Select(n => (topicPaths: n.Key, subscribe: n.Max(o => o.subscribe)));
 
-                foreach (var (topicPath, subscribe) in topicConfigs)
+                foreach ((var topicPath, var subscribe) in topicConfigs)
                 {
                     if (!await _administrationClient.TopicExistsAsync(topicPath))
                     {
@@ -284,7 +284,7 @@ internal sealed class AzureServiceBusConsumerClient : IConsumerClient
                 var added = headers.TryAdd(customHeader.Key, customHeader.Value);
 
                 if (!added)
-                    _logger.LogWarning("Not possible to add the custom header {Header}. A value with the same key already exists in the Message headers.",customHeader.Key);
+                    _logger.LogWarning("Not possible to add the custom header {Header}. A value with the same key already exists in the Message headers.", customHeader.Key);
             }
         }
 

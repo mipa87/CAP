@@ -43,12 +43,12 @@ internal class AzureServiceBusTransport : ITransport, IServiceBusProducerDescrip
     public IServiceBusProducerDescriptor CreateProducerForMessage(TransportMessage transportMessage)
     {
         return _asbOptions.Value
-                   .CustomProducers
-                   .SingleOrDefault(p => p.MessageTypeName == transportMessage.GetName())
-               ??
-               new ServiceBusProducerDescriptor(
-                   transportMessage.GetName(),
-                   _asbOptions.Value.TopicPath);
+            .CustomProducers
+            .SingleOrDefault(p => p.MessageTypeName == transportMessage.GetName())
+            ??
+            new ServiceBusProducerDescriptor(
+                transportMessage.GetName(),
+                _asbOptions.Value.TopicPath);
     }
 
     public BrokerAddress BrokerAddress => new("AzureServiceBus", _asbOptions.Value.ConnectionString);
@@ -123,8 +123,8 @@ internal class AzureServiceBusTransport : ITransport, IServiceBusProducerDescrip
         try
         {
             _client ??= _asbOptions.Value.TokenCredential is null
-                ? new ServiceBusClient(_asbOptions.Value.ConnectionString)
-                : new ServiceBusClient(_asbOptions.Value.Namespace, _asbOptions.Value.TokenCredential);
+                ? new ServiceBusClient(_asbOptions.Value.ConnectionString, _asbOptions.Value.ClientOptions)
+                : new ServiceBusClient(_asbOptions.Value.Namespace, _asbOptions.Value.TokenCredential, _asbOptions.Value.ClientOptions);
 
             var newSender = _client.CreateSender(producerDescriptor.TopicPath);
             _senders.AddOrUpdate(
